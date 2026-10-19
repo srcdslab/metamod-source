@@ -645,7 +645,7 @@ namespace SourceHook
 			if (m_Proto.GetRet().size == 0) // void return function
 			{
 				// nullptr
-				m_HookFunc.xor_reg(rax, rax);
+				m_HookFunc.xorreg(rax, rax);
 				// 9th argument - const void* origRetPtr
 				MSVC_ONLY(m_HookFunc.mov(rsp(0x40), rax));
 				GCC_ONLY(m_HookFunc.mov(rsp(0x10), rax));
@@ -1593,7 +1593,7 @@ namespace SourceHook
 			m_PubFunc.leave();
 
 			// Return 0
-			m_PubFunc.xor_reg(rax, rax);
+			m_PubFunc.xorreg(rax, rax);
 
 			m_PubFunc.retn();
 
