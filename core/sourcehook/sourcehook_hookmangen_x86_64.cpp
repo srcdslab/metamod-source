@@ -308,7 +308,6 @@ namespace SourceHook
 		void* x64GenContext::GenerateHookFunc()
 		{
 			const auto& retInfo = m_Proto.GetRet();
-			m_HookFunc.breakpoint();
 
 			// For the time being, we only consider xmm0-xmm15 registers
 			// are only used to store 64bits worth of data, despite being
@@ -1145,6 +1144,10 @@ namespace SourceHook
 				m_HookFunc.lea(params_reg[reg_index], rbp(v_ret));
 				reg_index++;
 			}
+
+			// this parameter (the hook delegate or the original object, depending on the caller)
+			m_HookFunc.mov(params_reg[reg_index], rbp(v_this));
+			reg_index++;
 
 			for (int i = reg_index; i < num_reg; i++) {
 				m_HookFunc.mov(params_reg[i], rbp(v_sysv_reg + i*8));
