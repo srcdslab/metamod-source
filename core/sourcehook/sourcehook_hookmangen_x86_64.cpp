@@ -1302,8 +1302,10 @@ namespace SourceHook
 			// This hack should be removed eventually...
 			// TODO: Change to PassType_Float and use size=12?
 			if (retInfo.type == PassInfo::PassType_Object && retInfo.size == 12) {
-				m_HookFunc.movsd(xmm0, rbp(v_retptr+0));
-				m_HookFunc.movsd(xmm1, rbp(v_retptr+8));
+				// v_retptr holds a pointer to the value to return
+				m_HookFunc.mov(r8, rbp(v_retptr));
+				m_HookFunc.movsd(xmm0, r8());
+				m_HookFunc.movsd(xmm1, r8(8));
 				return;
 			}
 #endif
