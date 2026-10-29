@@ -28,7 +28,7 @@ jobs:
       image: ${{ matrix.container_image }}
     steps:
       - name: Checkout Metamod:Source
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: metamod-source
           fetch-depth: 0
@@ -90,7 +90,7 @@ jobs:
           echo "sdk_list=$(printf '%s\n' "${sdk_list[@]}" | jq --raw-input . | jq --slurp --compact-output .)" >> $GITHUB_OUTPUT
 
       - name: Cache dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         env:
           cache-name: hl2sdk
         with:
@@ -115,12 +115,13 @@ jobs:
         env:
           BREAKPAD_SYMBOL_SERVER: ${{ vars.BREAKPAD_SYMBOL_SERVER }}
           BREAKPAD_SYMBOL_SERVER_TOKEN: ${{ secrets.BREAKPAD_SYMBOL_SERVER_TOKEN }}
+        # Symbols are only uploaded when a symbol server is configured (not the case on forks).
         run: |
           mkdir build
           cd build
           python3 ../configure.py \
             --enable-optimize \
-            --breakpad-dump \
+            ${{ vars.BREAKPAD_SYMBOL_SERVER && '--breakpad-dump' || '' }} \
             --symbol-files \
             --sdks=${{ join(fromJson(steps.sdk_list.outputs.sdk_list), ',') }} \
             --targets=${{ env.ARCH }} \
